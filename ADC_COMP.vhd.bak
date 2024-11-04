@@ -1,0 +1,135 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.all;
+use IEEE.NUMERIC_STD.all;
+
+entity ADC_COMP is
+  port (
+    CLK      : in std_logic; -- 50 MHz system clock
+    NRST     : in std_logic; -- Active-low asynchronous reset
+    ADC_CSN  : out std_logic; -- ADC SPI chip-select
+    ADC_SCLK : out std_logic; -- ADC SPI SCLK
+    ADC_MOSI : out std_logic; -- ADC SPI MOSI
+    ADC_MISO : in std_logic;  -- ADC SPI MISO
+    ADC_DATA : out std_logic_vector(95 downto 0) -- 8 channels, each 12-bit ADC output
+  );
+end ADC_COMP;
+
+architecture behavioral of ADC_COMP is
+
+  constant SPI_CLK_DIV : integer := 25;
+  constant DATA_WIDTH  : integer := 16; -- for ADC128S022
+
+  type state_type is (ST_IDLE, ST_START, ST_SCK_H, ST_SCK_L, ST_WAIT);
+  signal state : state_type := ST_IDLE;
+
+  signal cs_n : std_logic := '1';
+  signal sclk : std_logic := '0';
+  signal mosi : std_logic := '0';
+
+  signal bit_index : integer range 0 to DATA_WIDTH - 1 := 0;
+  
+  -- Add array to store multiple channel data
+  type adc_data_array is array(0 to 7) of std_logic_vector(11 downto 0);
+  signal adc_data_all : adc_data_array := (others => (others => '0'));
+
+  signal channel   : integer range 0 to 7 := 0;  -- Current channel selection (0 to 7)
+  signal shift_en  : std_logic := '0';
+  signal shift_reg : std_logic_vector(DATA_WIDTH - 1 downto 0);
+
+  constant WAIT_CNT_MAX : integer := 31;
+  signal wait_cnt       : integer := 0;
+
+begin
+
+  adc_csn  <= cs_n;
+  adc_sclk <= sclk;
+  adc_mosi <= mosi;
+
+  -- Concatenate all channels' data for output as a 96-bit std_logic_vector
+  ADC_DATA <= adc_data_all(7) & adc_data_all(6) & adc_data_all(5) & adc_data_all(4) &
+              adc_data_all(3) & adc_data_all(2) & adc_data_all(1) & adc_data_all(0);
+
+  process (CLK, NRST)
+    variable count : integer range 0 to SPI_CLK_DIV - 1 := 0;
+  begin
+    if NRST = '0' then
+      count := 0;
+      shift_en <= '0';
+    elsif rising_edge(CLK) then
+      if count = SPI_CLK_DIV - 1 then
+        count := 0;
+        shift_en <= '1';
+      else
+        count := count + 1;
+        shift_en <= '0';
+      end if;
+    end if;
+  end process;
+
+  process (CLK, NRST)
+  begin
+    if NRST = '0' then
+      cs_n       <= '1';
+      mosi       <= '0';
+      sclk       <= '0';
+      channel    <= 0;
+      bit_index  <= 0;
+      wait_cnt   <= 0;
+      state      <= ST_IDLE;
+    elsif rising_edge(CLK) then
+      case state is
+        when ST_IDLE =>
+          bit_index <= 0;
+          cs_n      <= '1';
+          sclk      <= '1';
+          state     <= ST_START;
+
+        when ST_START  =>
+          shift_reg  <= (others => '0');
+          shift_reg(13 downto 11) <= std_logic_vector(to_unsigned(channel, 3)); -- Channel selection
+          cs_n   <= '0';
+          state  <= ST_SCK_L;
+
+        when ST_SCK_L =>
+          if shift_en = '1' then
+            sclk  <= '0';
+            mosi  <= shift_reg(shift_reg'left);
+            state <= ST_SCK_H;
+          end if;
+
+        when ST_SCK_H =>
+          if shift_en = '1' then
+            sclk      <= '1';
+            shift_reg <= shift_reg(shift_reg'left - 1 downto 0) & adc_miso;
+            if bit_index = DATA_WIDTH - 1 then
+              cs_n     <= '1';
+              wait_cnt <= WAIT_CNT_MAX;
+              state    <= ST_WAIT;
+            else
+              bit_index <= bit_index + 1;
+              state     <= ST_SCK_L;
+            end if;
+          end if;
+
+        when ST_WAIT =>
+          -- Store the ADC result in adc_data_all for the current channel
+          adc_data_all(channel) <= shift_reg(11 downto 0);
+          if wait_cnt = 0 then
+            -- Move to the next channel
+            if channel = 7 then
+              channel <= 0;
+            else
+              channel <= channel + 1;
+            end if;
+            state <= ST_IDLE;
+          else
+            wait_cnt <= wait_cnt - 1;
+          end if;
+
+        when others =>
+          state <= ST_IDLE;
+      end case;
+    end if;
+  end process;
+
+end behavioral;

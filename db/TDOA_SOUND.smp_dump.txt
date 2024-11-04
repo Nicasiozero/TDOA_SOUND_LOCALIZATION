@@ -1,0 +1,7 @@
+
+State Machine - |TEST_TIME|UART_TIME:uart_instance|state
+Name state.STOP_BIT state.DATA_BITS state.START_BIT state.IDLE 
+state.IDLE 0 0 0 0 
+state.START_BIT 0 0 1 1 
+state.DATA_BITS 0 1 0 1 
+state.STOP_BIT 1 0 0 1 

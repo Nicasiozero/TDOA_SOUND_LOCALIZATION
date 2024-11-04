@@ -1,0 +1,96 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity uart_hello is
+    Port ( clk    : in  STD_LOGIC;      -- สัญญาณนาฬิกา
+           reset  : in  STD_LOGIC;      -- สัญญาณรีเซ็ต
+           tx     : out STD_LOGIC       -- สัญญาณส่งข้อมูล (TX)
+           );
+end uart_hello;
+
+architecture Behavioral of uart_hello is
+
+    constant BAUD_RATE   : integer := 9600;                -- Baud Rate
+    constant CLOCK_FREQ  : integer := 50000000;            -- ความถี่ของ clock (ตัวอย่างใช้ 50 MHz)
+    constant CLOCKS_PER_BIT : integer := CLOCK_FREQ / BAUD_RATE;
+
+    type STATE_TYPE is (IDLE, START_BIT, DATA_BITS, STOP_BIT);
+    signal state       : STATE_TYPE := IDLE;
+    signal counter     : integer range 0 to CLOCKS_PER_BIT - 1 := 0;
+    signal bit_pos     : integer range 0 to 7 := 0;
+    signal data_index  : integer range 0 to 4 := 0;
+    signal tx_reg      : STD_LOGIC := '1';
+    
+    -- กำหนดข้อความ "hello" ในรูปแบบ ASCII
+    type DATA_ARRAY is array(0 to 4) of STD_LOGIC_VECTOR(7 downto 0);
+    constant data : DATA_ARRAY := (x"68", x"65", x"6C", x"6C", x"6F");  -- ASCII ของ "h", "e", "l", "l", "o"
+
+begin
+
+    process(clk, reset)
+    begin
+        if reset = '1' then
+            state       <= IDLE;
+            counter     <= 0;
+            bit_pos     <= 0;
+            data_index  <= 0;
+            tx_reg      <= '1';
+        
+        elsif rising_edge(clk) then
+            case state is
+                when IDLE =>
+                    tx_reg <= '1';
+                    counter <= 0;
+                    bit_pos <= 0;
+                    if data_index < 5 then
+                        state <= START_BIT;
+                    end if;
+                    
+                when START_BIT =>
+                    tx_reg <= '0';
+                    if counter = CLOCKS_PER_BIT - 1 then
+                        counter <= 0;
+                        state <= DATA_BITS;
+                    else
+                        counter <= counter + 1;
+                    end if;
+                    
+                when DATA_BITS =>
+                    tx_reg <= data(data_index)(bit_pos);
+                    if counter = CLOCKS_PER_BIT - 1 then
+                        counter <= 0;
+                        if bit_pos = 7 then
+                            bit_pos <= 0;
+                            state <= STOP_BIT;
+                        else
+                            bit_pos <= bit_pos + 1;
+                        end if;
+                    else
+                        counter <= counter + 1;
+                    end if;
+                    
+                when STOP_BIT =>
+                    tx_reg <= '1';
+                    if counter = CLOCKS_PER_BIT - 1 then
+                        counter <= 0;
+                        if data_index = 4 then
+                            data_index <= 0;
+                            state <= IDLE;
+                        else
+                            data_index <= data_index + 1;
+                            state <= START_BIT;
+                        end if;
+                    else
+                        counter <= counter + 1;
+                    end if;
+                    
+                when others =>
+                    state <= IDLE;
+            end case;
+        end if;
+    end process;
+
+    tx <= tx_reg;
+
+end Behavioral;

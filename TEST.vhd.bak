@@ -1,0 +1,70 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.all;
+use IEEE.NUMERIC_STD.all;
+
+entity TEST is
+  port (
+    CLK       : in std_logic; 
+    NRST      : in std_logic; 
+    ADC_CSN   : out std_logic;
+    ADC_SCLK  : out std_logic;
+    ADC_MOSI  : out std_logic;
+    ADC_MISO  : in std_logic;
+    LEDS      : out std_logic_vector(7 downto 0) 
+  );
+end TEST;
+
+architecture Behavioral of TEST is
+
+  component ADC_COMP
+    port (
+      CLK       : in std_logic; -- 50 MHz system clock
+      NRST      : in std_logic; -- Active-low asynchronous reset
+      ADC_CSN   : out std_logic; -- ADC SPI chip-select
+      ADC_SCLK  : out std_logic; -- ADC SPI SCLK
+      ADC_MOSI  : out std_logic; -- ADC SPI MOSI
+      ADC_MISO  : in std_logic;  -- ADC SPI MISO
+      ADC_DATA  : out std_logic_vector(95 downto 0) -- 8 channels, each 12-bit ADC output
+    );
+  end component;
+
+  signal adc_out   : std_logic_vector(95 downto 0);
+  signal adc_data  : std_logic_vector(11 downto 0);
+  signal adc_done  : std_logic;
+  
+  constant WAIT_CNT_MAX : integer := 93;
+  signal wait_cnt       : integer := 0;
+
+begin
+
+  adc_instance: ADC_COMP
+    port map (
+      CLK       => CLK,
+      NRST      => NRST,
+      ADC_CSN   => ADC_CSN,
+      ADC_SCLK  => ADC_SCLK,
+      ADC_MOSI  => ADC_MOSI,
+      ADC_MISO  => ADC_MISO,
+      ADC_DATA  => adc_out
+    );
+
+  process (CLK, NRST)
+    variable value   : integer range 0 to 255;
+    variable leds_on : integer range 0 to 7;
+  begin
+    if NRST = '0' then
+      LEDS <= (others => '0');
+    elsif rising_edge(CLK) then
+      -- Extract data from the first channel (12 bits)
+      adc_data <= adc_out(11 downto 0);
+      
+      -- Convert to integer and calculate LEDs
+      value := to_integer(unsigned(adc_data));
+      leds_on := value / 32;
+
+      LEDS <= (others => '0');
+      LEDS(leds_on downto 0) <= (others => '1');
+    end if;
+  end process;
+
+end Behavioral;
