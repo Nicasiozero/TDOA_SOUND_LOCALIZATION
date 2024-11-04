@@ -79,30 +79,32 @@ begin
             else
                 clock_divider <= clock_divider + 1;
             end if;
+				
+				
 
             if MIC1_IN = '1' and (debounceMic1 = '0')then
                 mic1_time <= time_counter; 
 					 debounceMic1 <= '1';
 					 pTimeMic1 <= pTime;
             end if;
+----
+--            if MIC2_IN = '1' and (debounceMic2 = '0')then
+--                mic2_time <= time_counter; 
+--					 debounceMic2 <= '1';
+--					 pTimeMic2 <= pTime;
+--            end if;
 --
-            if MIC2_IN = '1' and (debounceMic2 = '0')then
-                mic2_time <= time_counter; 
-					 debounceMic2 <= '1';
-					 pTimeMic2 <= pTime;
-            end if;
-
-            if MIC3_IN = '1' and (debounceMic3 = '0')then
-                mic3_time <= time_counter; 
-					 debounceMic3 <= '1';
-					 pTimeMic3 <= pTime;
-            end if;
-							
-				if (mic1_time /= 0) and (mic2_time /= 0) and (mic3_time /= 0) and (debounce = '0') then
-					debounce <= '1';
-					done <= '1';
-					pTime <= time_counter;
-				end if;
+--            if MIC3_IN = '1' and (debounceMic3 = '0')then
+--                mic3_time <= time_counter; 
+--					 debounceMic3 <= '1';
+--					 pTimeMic3 <= pTime;
+--            end if;
+--							
+--				if (mic1_time /= 0) and (mic2_time /= 0) and (mic3_time /= 0) and (debounce = '0') then
+--					debounce <= '1';
+--					done <= '1';
+--					pTime <= time_counter;
+--				end if;
 				
 				
 --				if (time_counter - pTimeMic1) = 500000  or  (time_counter - pTimeMic1) > 500000 then

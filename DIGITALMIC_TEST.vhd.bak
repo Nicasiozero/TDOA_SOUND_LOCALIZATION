@@ -1,0 +1,30 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.all;
+use IEEE.NUMERIC_STD.all;
+
+entity DIGITALMIC_TEST is
+  port (
+    CLK       : in std_logic;  
+    NRST      : in std_logic;  
+    TX        : out STD_LOGIC;    
+    TOGGLE    : out STD_LOGIC;    
+    MIC1_IN   : in std_logic;
+    MIC2_IN   : in std_logic;
+    MIC3_IN   : in std_logic
+  );
+end DIGITALMIC_TEST;
+
+architecture behavioral of DIGITALMIC_TEST is
+   
+
+begin
+
+
+    process (CLK, NRST)
+    begin
+        if rising_edge(CLK) then
+
+        end if;
+    end process;
+
+end behavioral;

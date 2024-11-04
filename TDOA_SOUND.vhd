@@ -102,7 +102,7 @@ begin
 --            MIC3 <= adc_out3(11 downto 0);
 
 
-				if to_integer(unsigned(adc_out1)) >= 3000 or to_integer(unsigned(adc_out1)) <= 1500 then 
+				if to_integer(unsigned(adc_out1)) >= 3000 then 
 					TX <= '1';
 				else
 					TX <= '0';

@@ -1,13 +1,13 @@
-Analysis & Synthesis Status : Successful - Mon Nov  4 09:53:51 2024
+Analysis & Synthesis Status : Successful - Mon Nov  4 17:32:26 2024
 Quartus Prime Version : 20.1.1 Build 720 11/11/2020 SJ Lite Edition
 Revision Name : TDOA_SOUND
-Top-level Entity Name : TEST_TIME
+Top-level Entity Name : TDOA_SOUND
 Family : Cyclone IV E
-Total logic elements : 1,246
-    Total combinational functions : 766
-    Dedicated logic registers : 875
-Total registers : 875
-Total pins : 7
+Total logic elements : 807
+    Total combinational functions : 599
+    Dedicated logic registers : 577
+Total registers : 577
+Total pins : 44
 Total virtual pins : 0
 Total memory bits : 12,288
 Embedded Multiplier 9-bit elements : 0
