@@ -18,18 +18,83 @@ Requirements
 Pin Configuration
 
 The following pin configuration is used for the digital microphone setup:
-Signal	Direction	Pin	Bank	LVTTL Voltage	Drive Strength
-CLK	Input	PIN_R8	B3	3.3 V	8mA
-MIC1_IN	Input	PIN_G15	B6	3.3 V	8mA
-MIC2_IN	Input	PIN_F14	B6	3.3 V	8mA
-MIC3_IN	Input	PIN_F15	B6	3.3 V	8mA
-NRST	Input	PIN_J15	B5	3.3 V	8mA
-TOGGLE	Output	PIN_M8	-	2.5 V	8mA
-TX	Output	PIN_G16	B6	3.3 V	8mA
-ADC_CSN	Unknown	PIN_A10	B7	3.3 V	8mA
-ADC_MISO	Unknown	PIN_A9	B7	3.3 V	8mA
-ADC_MOSI	Unknown	PIN_B10	B7	3.3 V	8mA
-ADC_SCLK	Unknown	PIN_B14	B7	3.3 V	8mA
+
+    CLK
+        Direction: Input
+        Pin: PIN_R8
+        Bank: B3
+        Voltage: 3.3 V LVTTL
+        Drive Strength: 8mA
+
+    MIC1_IN
+        Direction: Input
+        Pin: PIN_G15
+        Bank: B6
+        Voltage: 3.3 V LVTTL
+        Drive Strength: 8mA
+
+    MIC2_IN
+        Direction: Input
+        Pin: PIN_F14
+        Bank: B6
+        Voltage: 3.3 V LVTTL
+        Drive Strength: 8mA
+
+    MIC3_IN
+        Direction: Input
+        Pin: PIN_F15
+        Bank: B6
+        Voltage: 3.3 V LVTTL
+        Drive Strength: 8mA
+
+    NRST
+        Direction: Input
+        Pin: PIN_J15
+        Bank: B5
+        Voltage: 3.3 V LVTTL
+        Drive Strength: 8mA
+
+    TOGGLE
+        Direction: Output
+        Pin: PIN_M8
+        Voltage: 2.5 V
+        Drive Strength: 8mA
+
+    TX
+        Direction: Output
+        Pin: PIN_G16
+        Bank: B6
+        Voltage: 3.3 V LVTTL
+        Drive Strength: 8mA
+
+    ADC_CSN
+        Direction: Unknown
+        Pin: PIN_A10
+        Bank: B7
+        Voltage: 3.3 V LVTTL
+        Drive Strength: 8mA
+
+    ADC_MISO
+        Direction: Unknown
+        Pin: PIN_A9
+        Bank: B7
+        Voltage: 3.3 V LVTTL
+        Drive Strength: 8mA
+
+    ADC_MOSI
+        Direction: Unknown
+        Pin: PIN_B10
+        Bank: B7
+        Voltage: 3.3 V LVTTL
+        Drive Strength: 8mA
+
+    ADC_SCLK
+        Direction: Unknown
+        Pin: PIN_B14
+        Bank: B7
+        Voltage: 3.3 V LVTTL
+        Drive Strength: 8mA
+        
 Usage
 
     Set up the environment: Ensure that Quartus 20.1 is installed on an Ubuntu 20.04 system.
