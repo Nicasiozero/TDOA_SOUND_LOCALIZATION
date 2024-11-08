@@ -4,18 +4,6 @@
 			"name" : "Top",
 			"pins" : [
 				{
-					"name" : "ADC_CSN",
-					"strict" : false
-				},
-				{
-					"name" : "ADC_SCLK",
-					"strict" : false
-				},
-				{
-					"name" : "ADC_MOSI",
-					"strict" : false
-				},
-				{
 					"name" : "TX",
 					"strict" : false
 				},
@@ -28,23 +16,15 @@
 					"strict" : false
 				},
 				{
-					"name" : "ADC_MISO",
+					"name" : "MIC3_IN",
 					"strict" : false
 				},
 				{
-					"name" : "altera_reserved_tms",
+					"name" : "MIC1_IN",
 					"strict" : false
 				},
 				{
-					"name" : "altera_reserved_tck",
-					"strict" : false
-				},
-				{
-					"name" : "altera_reserved_tdi",
-					"strict" : false
-				},
-				{
-					"name" : "altera_reserved_tdo",
+					"name" : "MIC2_IN",
 					"strict" : false
 				}
 			]
